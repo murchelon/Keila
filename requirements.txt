@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+SpeechRecognition
+pyaudio
+gtts
+pygame
+gpiozero
+python-dotenv
+colorama
