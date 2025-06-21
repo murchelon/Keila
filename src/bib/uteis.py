@@ -22,7 +22,7 @@ def log_term(msg: str, color: str = "DEFAULT") -> None:
 async def sleep_async(seconds: int) -> None:
     await asyncio.sleep(seconds)  
 
-def sleep(seconds: int) -> None:
+def sleep(seconds: float) -> None:
     time.sleep(seconds)  
 
 

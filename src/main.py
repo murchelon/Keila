@@ -1,15 +1,15 @@
+import os
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from hardware.leds import init_leds
-from ui.tela import start_ui
-from core.state_manager import StateManager, State
-import threading
-
 from dotenv import load_dotenv
-import os
 
+from hardware.leds import init_leds
+from ui.screen import init_ui
+from core.state_manager import StateManager, state_type
 from bib.uteis import log_term, sleep_async, sleep
 from common.types import ApiRetStatusCode, ApiRetStatus
+from Actions.VoicePrompt.VoicePrompt import start_action_VoicePrompt
+from bib.threadManager import ThreadManager
 
 load_dotenv()
 
@@ -19,6 +19,8 @@ KEILA_ENV = os.getenv("KEILA_ENV")
 
 global_STATE = StateManager()
 
+thread_manager = ThreadManager()
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
@@ -27,44 +29,45 @@ async def lifespan(app: FastAPI):
     log_term(f"==  KEILA {KEILA_VERSION}  ==", "BLUE")
     log_term(f"=================", "BLUE")
 
-    global_STATE.set_state(State.INIT)
-    init_leds()
+    global_STATE.set_state(state_type.INIT)
 
-    threading.Thread(target=start_ui, args=(global_STATE,), daemon=True).start()
-    global_STATE.set_state(State.READY)
-    log_term("[Main] Keila is ready")
+    init_leds()
+    init_ui()
+
+    # threading.Thread(target=start_ui, args=(global_STATE,), daemon=True).start()
+    global_STATE.set_state(state_type.READY)
+    log_term("[MAIN] Keila is ready")
     print("")
 
     yield
-    log_term("[Main] Keila is shutting down")
+    log_term("[MAIN] Keila is shutting down")
     print("")
 
 
 app = FastAPI(lifespan=lifespan)
 
-@app.post("/api/initFlow_voice_prompt")
-async def initFlow_voice_prompt():
-    log_term("[API] Rota: /api/initFlow_voice_prompt", "BLUE")
+@app.post("/api/actions/VoicePrompt")
+async def action_VoicePrompt():
+    log_term("[API] Route: /api/actions/VoicePrompt", "BLUE")
 
-    if global_STATE.get_state() != State.READY.name:
+    if global_STATE.get_state() != state_type.READY.name:
         return {
             "prod": "KEILA",
             "version": KEILA_VERSION,
             "env": KEILA_ENV,
             "global_STATE": global_STATE.get_state(),
             "statusCode": ApiRetStatusCode.BUSY.name,
-            "msg": "Por favor, aguarde ..."        
+            "msg": "Please, wait ..."        
         }
 
-    log_term("[API] INIT initFlow_voice_prompt")
+    global_STATE.set_state(state_type.RUNNING)
 
-    global_STATE.set_state(State.LISTENING)
-
-    await sleep_async(10)
-
-    global_STATE.set_state(State.READY)
-
-    log_term("[API] FINISH initFlow_voice_prompt")
+    thread_manager.start_thread(
+        "VoicePrompt",
+        start_action_VoicePrompt,
+        args=(global_STATE,)
+    )
+    
 
     return {
         "prod": "KEILA",
@@ -72,19 +75,19 @@ async def initFlow_voice_prompt():
         "env": KEILA_ENV,
         "global_STATE": global_STATE.get_state(),
         "statusCode": ApiRetStatusCode.OK.name,
-        "msg": "initFlow_voice_prompt finalizado"        
+        "msg": "Action: Starded"        
     }
 
 
-@app.post("/api/cancel")
-async def cancel():
-    log_term("[API] Rota: /api/cancel", "BLUE")
+@app.post("/api/cancelActions")
+async def cancelActions():
+    log_term("[API] Route: /api/cancelActions", "BLUE")
 
-    global_STATE.set_state(State.CANCELING)
+    global_STATE.set_state(state_type.CANCELING)
 
-    # acoes para cancelar
+    # acoes para cancelar - mata o processo
+    thread_manager.stop_all()
 
-    global_STATE.set_state(State.READY)
 
     retApiRetStatus = ApiRetStatus(ApiRetStatusCode.OK, "")
 
@@ -94,14 +97,14 @@ async def cancel():
         "env": KEILA_ENV,
         "global_STATE": global_STATE.get_state(),
         "statusCode": retApiRetStatus.status_code.name,
-        "msg": "All actions canceled"        
+        "msg": "Canceling all actions"        
     }
 
 
 
 @app.get("/api/getInfo")
-async def get_getinfo():
-    log_term("[API] Rota: /api/getInfo", "BLUE")
+async def getInfo():
+    log_term("[API] Route: /api/getInfo", "BLUE")
     retApiRetStatus = ApiRetStatus(ApiRetStatusCode.OK, "")
 
     return {
