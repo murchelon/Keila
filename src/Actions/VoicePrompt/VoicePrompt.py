@@ -4,11 +4,11 @@ from bib.uteis import log_term, sleep
 import time
 
 # Você precisa criar essas funções
-from bib.audio_Record import recordAudio
+from bib.audio_Record import recordAudio, record_audio_untill_silence
 from bib.audio_Playback import playAudio
 from bib.api_AI import askAI
-from bib.api_SpeachToText import speachToText
-from bib.api_TextToSpeach import textToSpeach
+from bib.api_SpeechToText import SpeechToText
+from bib.api_TextToSpeech import textToSpeech
 
 
 
@@ -23,40 +23,44 @@ def start_action_VoicePrompt(stop_event: Event, state_manager: StateManager) -> 
     try:
         # 1. Gravar áudio
         log_term("[ACTION] VoicePrompt - RECORD AUDIO")
-        audio_path = recordAudio(stop_event, time_limit_toRun)
+        audio_path = record_audio_untill_silence(stop_event)
         if stop_event.is_set():
             raise InterruptedError("Canceled during recording")
 
-        # 2. Transcrever com speech-to-text
-        log_term("[ACTION] VoicePrompt - TRANSCRIBE AUDIO")
-        texto = speachToText(audio_path)
-        if not texto:
-            log_term("Nenhum texto reconhecido.")
-            return
+        log_term("audio_path = " + audio_path)
 
-        if stop_event.is_set():
-            raise InterruptedError("Canceled during Convert speach-to-text")
+        state_manager.set_state(state_type.READY)
 
-        # 3. Obter resposta do GPT
-        log_term("[ACTION] VoicePrompt - SEND TEXT TO GPT")
-        resposta = askAI(texto)
+        # # 2. Transcrever com speech-to-text
+        # log_term("[ACTION] VoicePrompt - TRANSCRIBE AUDIO")
+        # texto = SpeechToText(audio_path)
+        # if not texto:
+        #     log_term("Nenhum texto reconhecido.")
+        #     return
 
-        if stop_event.is_set():
-            raise InterruptedError("Canceled during Send to GPT")
+        # if stop_event.is_set():
+        #     raise InterruptedError("Canceled during Convert Speech-to-text")
 
-        # 4. Converter para áudio com text-to-speech
-        log_term("[ACTION] VoicePrompt - CONVERT TEXT TO AUDIO")
-        resposta_audio_path = textToSpeach(resposta)
+        # # 3. Obter resposta do GPT
+        # log_term("[ACTION] VoicePrompt - SEND TEXT TO GPT")
+        # resposta = askAI(texto)
 
-        if stop_event.is_set():
-            raise InterruptedError("Canceled during Convert text-to-speach")
+        # if stop_event.is_set():
+        #     raise InterruptedError("Canceled during Send to GPT")
 
-        # 5. Tocar resposta
-        log_term("[ACTION] VoicePrompt - PLAYING ANSWER")
-        playAudio(resposta_audio_path)
+        # # 4. Converter para áudio com text-to-speech
+        # log_term("[ACTION] VoicePrompt - CONVERT TEXT TO AUDIO")
+        # resposta_audio_path = textToSpeech(resposta)
 
-        if stop_event.is_set():
-            raise InterruptedError("Canceled during playing audio")        
+        # if stop_event.is_set():
+        #     raise InterruptedError("Canceled during Convert text-to-Speech")
+
+        # # 5. Tocar resposta
+        # log_term("[ACTION] VoicePrompt - PLAYING ANSWER")
+        # playAudio(resposta_audio_path)
+
+        # if stop_event.is_set():
+        #     raise InterruptedError("Canceled during playing audio")        
 
     except InterruptedError as e:
         log_term(f"[ACTION] VoicePrompt - CANCELED ({str(e)})")
@@ -66,4 +70,4 @@ def start_action_VoicePrompt(stop_event: Event, state_manager: StateManager) -> 
 
     finally:
         log_term("[ACTION] VoicePrompt - END")
-        state_manager.set_state(state_type.READY)
+        # state_manager.set_state(state_type.READY)

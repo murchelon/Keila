@@ -91,6 +91,8 @@ async def cancelActions():
 
     retApiRetStatus = ApiRetStatus(ApiRetStatusCode.OK, "")
 
+    global_STATE.set_state(state_type.READY)
+
     return {
         "prod": "KEILA",
         "version": KEILA_VERSION,
