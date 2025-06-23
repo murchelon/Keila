@@ -3,13 +3,16 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from dotenv import load_dotenv
 
-from hardware.leds import init_leds
-from ui.screen import init_ui
-from core.state_manager import StateManager, state_type
-from bib.uteis import log_term, sleep_async, sleep
-from common.types import ApiRetStatusCode, ApiRetStatus
 from Actions.VoicePrompt.VoicePrompt import start_action_VoicePrompt
+from ui.screen import init_ui
+from state.state_manager import StateManager, state_type
+from hardware.leds import init_leds
+from common.types import ApiRetStatusCode, ApiRetStatus
+from bib.uteis import log_term, sleep_async, sleep
 from bib.threadManager import ThreadManager
+from bib.config import KeilaConfig
+
+keila_config = KeilaConfig.instance()
 
 load_dotenv()
 
@@ -37,6 +40,7 @@ async def lifespan(app: FastAPI):
     # threading.Thread(target=start_ui, args=(global_STATE,), daemon=True).start()
     global_STATE.set_state(state_type.READY)
     log_term("[MAIN] Keila is ready")
+    log_term("Chave atual: " + str(keila_config.get("openai_api_key")))
     print("")
 
     yield

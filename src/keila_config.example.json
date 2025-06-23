@@ -1,0 +1,9 @@
+{
+    "openai_api_key": "openai-key",
+    "voice": "nova",
+    "language": "pt-BR",
+    "audio": {
+        "silence_threshold": 300,
+        "silence_duration": 2.0
+    }
+}
