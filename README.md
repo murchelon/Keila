@@ -45,6 +45,8 @@ There must be a configuration file called `keila_config.ini` in the folder where
 - Indicator LEDs  
 - Ambient temperature sensor  
 - Automatic startup on power-on  
+- Internal API to serve the screen or the Admin Panel via browser
+- Actions system to allow new funcionality
 
 ## Hardware Used  
 

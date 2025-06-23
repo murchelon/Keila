@@ -1,0 +1,16 @@
+{
+    "language": "pt-BR",
+    "speechToText": {
+        "ai_who": "OPENAI",
+        "ai_api_key": "api key",
+        "ai_endpoint": "https://api.openai.com/v1/audio/transcriptions",
+        "ai_model": "whisper-1"
+    },
+    "audio_record": {
+        "silence_threshold": 320,
+        "silence_duration": 1.7
+    },
+    "audio_play": {
+        "voice": "nova"
+    }
+}

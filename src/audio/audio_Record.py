@@ -6,17 +6,11 @@ import wave
 
 from bib.uteis import log_term, sleep
 
-def recordAudio(stop_event: Event, time_limit_toRun: int):
-    log_term("[AUDIO_RECORD] recordAudio - START")
-    sleep(3)
-    log_term("[AUDIO_RECORD] recordAudio - FINISH")
-
-    return "path para o file"
 
 
 
 def record_audio_untill_silence(stop_event: Event, 
-                                output_filename: str = 'audio/audio.wav', 
+                                output_filename: str = './temp/audio.wav', 
                                 silence_threshold: float = 320,  
                                 silence_duration: float = 1.7, 
                                 max_duration: float = 60) -> str:

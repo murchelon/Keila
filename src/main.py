@@ -22,7 +22,7 @@ KEILA_ENV = os.getenv("KEILA_ENV")
 
 global_STATE = StateManager()
 
-thread_manager = ThreadManager()
+thread_manager_main = ThreadManager()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -40,7 +40,6 @@ async def lifespan(app: FastAPI):
     # threading.Thread(target=start_ui, args=(global_STATE,), daemon=True).start()
     global_STATE.set_state(state_type.READY)
     log_term("[MAIN] Keila is ready")
-    log_term("Chave atual: " + str(keila_config.get("openai_api_key")))
     print("")
 
     yield
@@ -66,7 +65,7 @@ async def action_VoicePrompt():
 
     global_STATE.set_state(state_type.RUNNING)
 
-    thread_manager.start_thread(
+    thread_manager_main.start_thread(
         "VoicePrompt",
         start_action_VoicePrompt,
         args=(global_STATE,)
@@ -90,7 +89,7 @@ async def cancelActions():
     global_STATE.set_state(state_type.CANCELING)
 
     # acoes para cancelar - mata o processo
-    thread_manager.stop_all()
+    thread_manager_main.stop_all()
 
 
     retApiRetStatus = ApiRetStatus(ApiRetStatusCode.OK, "")
@@ -120,4 +119,22 @@ async def getInfo():
         "global_STATE": global_STATE.get_state(),
         "statusCode": retApiRetStatus.status_code.name,
         "msg": "Info about Keila!"        
+    }
+
+
+@app.post("/api/reloadConfig")
+async def reloadConfig():
+    log_term("[API] Route: /api/reloadConfig", "BLUE")
+
+    keila_config.reload()  
+
+    retApiRetStatus = ApiRetStatus(ApiRetStatusCode.OK, "")
+
+    return {
+        "prod": "KEILA",
+        "version": KEILA_VERSION,
+        "env": KEILA_ENV,
+        "global_STATE": global_STATE.get_state(),
+        "statusCode": retApiRetStatus.status_code.name,
+        "msg": "Config reloaded"        
     }
