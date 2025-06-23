@@ -2,13 +2,15 @@
 
 ## Technical Specification
 
-Keila is a physical device based on a Raspberry Pi 3 B+, using Python, that functions as an intelligent virtual assistant. The system receives voice commands, converts them to text (STT), sends them to the OpenAI API (ChatGPT), receives the response in text, and converts it back to audio (TTS) for spoken output. The source code will always be in English.  
+Keila is a physical device based on a Raspberry Pi 3 B+, using Python, that functions as an intelligent virtual assistant. The system receives voice commands, converts them to text (STT), sends them to the OpenAI API (ChatGPT), receives the response in text, and converts it back to audio (TTS) for spoken output.  
 
 All interactions are displayed on a touchscreen, which also serves as a local configuration interface. The system can be configured either locally via the embedded screen or remotely via a browser. Both are valid ways to interact with Keila’s API.  
 
 The capacitive screen must display a Keila avatar with simple facial expressions. This screen is used to show the avatar and information when needed, as well as to provide access to settings as an alternative to the browser. There must be a physical button (or one accessible on the screen) that starts a predefined ACTION, such as VoicePrompt.  
 
-All interaction with Keila must occur via API, allowing 100% control via the screen (menus) or via a web client provided by Keila itself, with full access to features.  
+All interaction with Keila must occur via API, allowing 100% control via the screen (menus) or via a web client provided by Keila itself, with full access to features. 
+
+Keila must have a temperature sensor that allows measuring and informing the user of the temperature.  
 
 ## Structure and Operation  
 
@@ -30,7 +32,7 @@ All development must be done on a Windows machine, ensuring that all of Keila’
 
 There must be a configuration file called `keila_config.ini` in the folder where the program is run.  
 
-Finally, Keila must have a temperature sensor that allows measuring and informing the user of the temperature.  
+
 
 ## Features  
 
@@ -46,7 +48,7 @@ Finally, Keila must have a temperature sensor that allows measuring and informin
 
 ## Hardware Used  
 
-- Raspberry Pi 3 B+: Main computer  
+- Raspberry Pi 3 B+ 1Gb: Main computer  
 - HDMI + USB Capacitive Screen (5~7"): Visual touch interface  
 - 5V 3A (or 4~5A) power supply: System power  
 - USB or I2S microphone: Audio capture  
