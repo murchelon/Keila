@@ -23,3 +23,13 @@ docker run --rm -p 5000:5000 keila
 ### Ou com docker-compose
 docker-compose up --build
 
+-- GIT:
+git status
+
+descarta todas as alteracoes locais:
+git reset --hard
+git clean -fd
+
+atualiza ultima versao do git:
+git pull origin main
+
