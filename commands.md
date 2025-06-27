@@ -11,6 +11,7 @@ pip install -r src/requirements.txt
 uvicorn main:app --host 0.0.0.0 --reload --port 56789
 
 
+
 ## Como rodar com Docker
 
 ### Build da imagem
