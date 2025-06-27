@@ -2,6 +2,7 @@
 
 # Script em: sudo nano /usr/local/bin/ativar_wifi.sh
 
+
 LOG_FILE="/tmp/ativar_wifi.log"
 
 log_msg() {
@@ -15,16 +16,16 @@ log_cmd() {
 }
 
 log_msg "=== Início do script ativar_wifi.sh ==="
-sleep 2
+sleep 10
 
 log_cmd "Desbloqueando Wi-Fi ..." "/usr/sbin/rfkill unblock wifi"
-sleep 2
+sleep 10
 
 log_cmd "Ativando a interface wlan0 ..." "/usr/sbin/ip link set wlan0 up"
-sleep 2
+sleep 3
 
 log_cmd "Iniciando o serviço wpa_supplicant@wlan0 ..." "/usr/bin/systemctl start wpa_supplicant@wlan0"
-sleep 2
+sleep 3
 
 IP_EXISTE=$(/usr/sbin/ip -4 addr show wlan0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
 
