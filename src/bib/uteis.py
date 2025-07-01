@@ -33,9 +33,6 @@ def as_float(value, fallback: float) -> float:
     except (TypeError, ValueError):
         return fallback
     
-import requests
-from typing import Optional
-from bib.uteis import log_term
 
 def api_request(
     method: str,
