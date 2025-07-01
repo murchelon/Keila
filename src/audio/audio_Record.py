@@ -42,7 +42,7 @@ def record_audio_untill_silence(stop_event: Event,
         audio_data = np.frombuffer(data, dtype=np.int16)
         volume = np.abs(audio_data).mean()  # Volume médio (magnitude)
 
-        # Print de depuração
+
         print(f"[{i}] Volume médio: {volume:.2f} | Silent Chunks: {silent_chunks}/{silence_limit}")
 
         if volume < silence_threshold:

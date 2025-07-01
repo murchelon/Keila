@@ -2,7 +2,7 @@ from datetime import datetime
 from colorama import init, Fore, Style
 import asyncio
 import time
-import requests
+import httpx
 from typing import Optional
 
 def log_term(msg: str, color: str = "DEFAULT") -> None: 
@@ -19,7 +19,6 @@ def log_term(msg: str, color: str = "DEFAULT") -> None:
         outColor = Fore.WHITE        
 
     print(f"{Fore.BLUE}K:{Style.RESET_ALL} {Fore.YELLOW}{timestamp}{Style.RESET_ALL}  {outColor}{msg}{Style.RESET_ALL}")
-
 
 async def sleep_async(seconds: int) -> None:
     await asyncio.sleep(seconds)  
@@ -45,9 +44,6 @@ def api_request(
 ):
     """
     Função padrão para requisições HTTP (GET, POST, PUT, DELETE, etc.)
-
-
-
     result = api_request(
         method="POST",
         url="https://api.openai.com/v1/chat/completions",
@@ -58,7 +54,7 @@ def api_request(
         },
         use_json=True
     )
-
+    
     """
     try:
         log_term(f"[API_REQUEST] {method.upper()} para {url}")
@@ -79,15 +75,14 @@ def api_request(
             else:
                 kwargs["data"] = body
 
-        response = requests.request(**kwargs)
+        response = httpx.request(**kwargs)
         response.raise_for_status()
         log_term(f"[API_REQUEST] Sucesso: {response.status_code}")
         return response.json()
 
-    except requests.RequestException as e:
+    except httpx.RequestError as e:
         log_term(f"[API_REQUEST] Erro: {e}")
         return None
-
 
 def api_request_with_file(
     method: str,
@@ -109,11 +104,11 @@ def api_request_with_file(
         headers={"Authorization": f"Bearer {api_key}"},
         body={"model": "whisper-1"}
     )
-        
+
     """
     try:
         with open(file_path, "rb") as f:
-            files = {file_field_name: f}
+            files = {file_field_name: (file_path, f)}
             return api_request(
                 method=method,
                 url=url,
@@ -126,6 +121,3 @@ def api_request_with_file(
     except IOError as e:
         log_term(f"[API_REQUEST_WITH_FILE] Erro ao abrir arquivo: {e}")
         return None
-
-
-

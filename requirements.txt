@@ -4,4 +4,4 @@ uvicorn
 numpy==2.3.1
 PyAudio==0.2.14; sys_platform == "win32"
 python-dotenv==1.1.1
-Requests==2.32.4
+httpx

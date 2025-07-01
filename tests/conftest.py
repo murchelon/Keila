@@ -12,7 +12,7 @@ sys.path.insert(0, str(src_dir))
 
 if 'pyaudio' not in sys.modules:
     dummy = types.ModuleType('pyaudio')
-    dummy.paInt16 = 8
+    dummy.paInt16 = 8 # type: ignore
 
     class PyAudio:
         def open(self, *args, **kwargs):
@@ -31,7 +31,7 @@ if 'pyaudio' not in sys.modules:
         def terminate(self):
             pass
 
-    dummy.PyAudio = PyAudio
+    dummy.PyAudio = PyAudio # type: ignore
     sys.modules['pyaudio'] = dummy
 
 
@@ -41,7 +41,7 @@ def prepare_config():
     """Create keila_config.json from example for tests."""
     base_dir = os.path.dirname(os.path.dirname(__file__))
     src_dir = os.path.join(base_dir, 'src')
-    example = os.path.join(src_dir, 'keila_config,example.json')
+    example = os.path.join(src_dir, 'keila_config.example.json')
     config = os.path.join(src_dir, 'keila_config.json')
     shutil.copy(example, config)
     os.environ.setdefault('KEILA_VERSION', 'test')
